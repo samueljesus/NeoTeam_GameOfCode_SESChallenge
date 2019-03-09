@@ -1,0 +1,57 @@
+Read me
+
+
+We have built an app to help an astronaut on Mars, next to the obvious implementation that are highly visible in the code we’d like to include some interesting technical details.
+
+
+Real-time:
+We know that even with satelite-comunication there will be latency in communication. Sometimes you need to go through several satellites to get to the receiving side of Mars. 
+This means that despite the advantages in speed in geographically dispersed networking, the software needs to be designed to keep latency at minimum. 
+In order to ensure that both the space suit app and the mission control app are on realtime data (that is to say, only delayed by infrastructure, not by software) we have used a websocket service.
+We react to the event as soon as it happens, replicating the information to all the listeners of the websocket.  
+
+
+
+
+Data
+
+
+Preventing damage of human instruments
+We used two API’s from the  DONKI API set provided by NASA:
+* CORONAL MASS EJECTION (the release of plasma that the sun sometimes ejects)
+* WSA+EnlilSimultion (solar wind predictions)
+We used this data to create some predictions of solar winds that could lead to damage of human instruments. Contributing to our overarching goal of keeping NEO, our astronaut, safe.
+
+
+Weather on Mars
+For our weather dashboarding we used the Maas2 api, which is sending us information from the Curiosity Rover probe. 
+This probe has suffered from some isssues causing downtime in a period of februari, which led to a debate within our team on whether this API is sufficiently accurate. However our further exploration of the latest data makes us belief that it is accurate enough for the role it plays in our application.
+For the actual mission on Mars we’d expect a local weather station to be setup and that information to be used instead.
+
+
+Images from Mars
+We used MARS images to fill our backend. We can choose one of three-rovers, choosing the camera and day and get some info from there. We have not been able to implement the use-case for this. But we imagine this would be a cool tool for further utilize for furthering research. We have two options for use:
+* Using AI to further analyze them and perhaps find patterns that cannot be recognized by humans
+* Using gamification to harvest the Wisdom of the Crowd to potentially have more scientific findings. We know that new space related discoveries are frequently made by using at ‘old’ data with new tools or fresh eyes, and think that opening these images up to a wider public might just lead to new insights.
+
+
+
+
+We have mocked up data when we could not find an API that would be accurate/suitable for the situation. These situations can be generally classified in one of the following cases:
+* When info needs to be available only in the specific mars situation (connected through local Mars Internet)
+* When we could not find an API that met our high standards for up-to-dateness and correctness
+* When we wanted to simulate a specific event.
+
+
+When mocking up data we have done our best to come up with realistic data sets that match with reality.
+We do not currently have a spacesuit, for example, so we have decided to mockup the data we reasonably expect to receive from a real-life spacesuit. These metrics have been created on the basis of research into EVA (Extravehicular Activity) suits. For example we chose to include the CO2 metrics based on an aborted space walk by astronaut Chris Cassidy, who was instructed to head back into the base because of a potentially deadly build up of Carbon Dioxide.
+For each datapoint we have taken care to research what would be expected values and how these would be interpreted in terms of the safety of the astronaut. 
+We set our dashboards using thresholds for acceptability based on this research.
+
+
+Interplanetary internet
+Our use-case deals with a mission center on Earth and an astronaut on Mars. This means they have to communicate a long distance, leading to an approximately 18 minute delay in internet. This requires certain design challenges, which we could not fit in our pitch, but wanted to code anyway.
+1. Batch communication and prioritization
+Communication will only be possible when the communication satellites are in the right position,  so we need to batch process the communication. Because we have a limited period to communicate the data before the satellite is out of range we built a prioritization mechanism as well, ensuring that critical messages get sent first. We will continue sending messages until the satellite times out or all messages are sent.
+1. No Call-back
+With a delay of 18 minutes a call and response set would take 36 minutes to complete. There is not internet protocol capable of handling this. We therefore assume that we cannot connect to the system to send a fetch request.
